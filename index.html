@@ -14,7 +14,21 @@
 </head>
 
 <body>
+    <!-- Navbar -->
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark mb-5">
+        <div class="container-fluid">
+            <a class="navbar-brand" href="#">All Country Details </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNavDarkDropdown" aria-controls="navbarNavDarkDropdown" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+          </button>
+        </div>
+    </nav>
 
+    <!-- modal  -->
+    <div id="modal-content">
+
+    </div>
+    <!-- country details -->
     <div class="container">
         <div id="countryList" class="row row-cols-1 row-cols-md-3 g-4">
 
@@ -32,63 +46,75 @@
         }
         apiData()
 
+        let countryList = document.getElementById('countryList')
 
         function country(data) {
-            let countryList = document.getElementById('countryList')
-            for (let i = 0; i < data.length; i++) {
-                var {
-                    flag,
-                    name,
-                    capital,
-                    subregion,
-                    borders,
-                    alpha3Code,
-                    callingCodes,
-                    population
-                } = data[i];
+
+            for (let i = 0; i < 250; i++) {
                 let dataStructure = ` 
                 <div class="col">
-                    <div class="card">
-                        <!-- country main   -->
-                        <img src="${flag}" class="card-img-top" alt="...">
-                        <div class="card-body">
-                            <h5 class="card-title">${name}</h5>
-                            <p id="countryCapital" class="card-text">Capital: ${capital}</p>
-                            <p id="countrySubregion" class="card-text">Region: ${subregion}</p>
-                            <a href="#" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#exampleModal${i+1}">See Details</a>
-                        </div>
-                        <!-- country modal -->
-                        <div class="modal fade" id="exampleModal${i+1}" tabindex="-1"   aria-labelledby="exampleModalLabel" aria-hidden="true">
-                            <div class="modal-dialog">
-                                <div class="modal-content">
-                                    <div class="modal-header">
-                                        <h5 class="modal-title" id="exampleModalLabel">Country Details</h5>
-                                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                                    </div>
-                                    <div class="modal-body">
-                                        <div class="card bg-dark text-white">
-                                            <img src="${flag}" class="card-img-top" alt="...">
-                                            <div class="card-img-overlay">
-                                                <h5 class="card-title">${name}</h5>
-                                                <p class="card-text">Capital: ${capital}</p>
-                                                <p class="card-text">Region: ${subregion}</p>
-                                                <p class="card-text">Neighbours : ${borders}</p>
-                                                <p class="card-text">Population: ${population}</p>
-                                                <p class="card-text">Country Code: ${alpha3Code}</p>
-                                                <p class="card-text">Telephone Code: ${callingCodes}</p>
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <div class="modal-footer">
-                                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>`
+        <div class="card">
+            <!-- country main   -->
+           
+            <div class="card-body">
+                <h5 class="card-title">${data[i].name}</h5>
+                <p id="countryCapital" class="card-text">Capital: ${data[i].capital}</p>
+                <p id="countrySubregion" class="card-text">Region: ${data[i].subregion}</p>
+                <a onclick="modal('${data[i].name}')" class="btn btn-primary">See Details</a>
+                <a id="modalBtn" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#exampleModal" style="opacity:0" > modal btn</a>
+            </div>
+            <!-- country modal -->
+
+        </div>
+    </div>
+            <!-- break -->`
                 countryList.innerHTML += dataStructure;
             }
+        }
+        const modal = countryName => {
+            const url = `https://restcountries.eu/rest/v2/name/${countryName}`
+            fetch(url)
+                .then(res => res.json())
+                .then(data => modalBox(data[0]))
+
+        }
+
+        const modalBox = data => {
+            console.log(data.name)
+            let amarModal = `<div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="exampleModalLabel">Country Details</h5>
+                    <button onclick="removeModal()" type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="card bg-dark text-white">
+                        <img src="${data.flag}" class="card-img-top" alt="...">
+                        <div class="card-img-overlay">
+                            <h5 class="card-title">${data.name}</h5>
+                            <p class="card-text">Capital: ${data.capital}</p>
+                            <p class="card-text">Region: ${data.subregion}</p>
+                            <p class="card-text">Neighbours : ${data.borders}</p>
+                            <p class="card-text">Population: ${data.population}</p>
+                            <p class="card-text">Country Code: ${data.alpha3Code}</p>
+                            <p class="card-text">Telephone Code: ${data.callingCodes}</p>
+                            
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button onclick="removeModal()" type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                </div>
+            </div>
+        </div>
+    </div>`
+            document.getElementById('modal-content').innerHTML += amarModal
+            document.getElementById('modalBtn').click()
+
+        }
+
+        function removeModal() {
+            document.getElementById('modal-content').innerHTML = ""
         }
     </script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta1/dist/js/bootstrap.bundle.min.js" integrity="sha384-ygbV9kiqUc6oa4msXn9868pTtWMgiQaeYH7/t7LECLbyPA2x65Kgf80OJFdroafW" crossorigin="anonymous"></script>
